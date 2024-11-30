@@ -44,7 +44,7 @@ export async function addBoard(req, res) {
     const boardToSave = {
       title,
       style: {
-        backgroundImg: style?.backgroundImg || ''
+        backgroundImage: style?.backgroundImage || ''
       },
       visibility,
       createdBy: {
@@ -52,7 +52,12 @@ export async function addBoard(req, res) {
         fullname: req.user.fullname,
         imgUrl: req.user.imgUrl
       },
-      members: [req.user]
+      members: [req.user],
+      labels: [],
+      groups: [],
+      activities: [],
+      isStarred: false,
+      archivedAt: null
     }
 
     const saveboard = await boardService.save(boardToSave)
@@ -66,15 +71,13 @@ export async function addBoard(req, res) {
 export async function updateBoard(req, res) {
   try {
     const { boardId } = req.params
-    const boardToInsert = req.body
+    const updates = req.body
 
-    if (!boardId) {
-      return res.status(400).send('Bad request')
-    }
+    const existingBoard = req.board
 
     const boardToUpdate = {
-      ...req.board,
-      ...boardToInsert,
+      ...existingBoard,
+      ...updates,
       _id: boardId
     }
 

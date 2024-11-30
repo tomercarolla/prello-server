@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb'
+import { MongoClient, ObjectId } from 'mongodb'
 import { config } from '../config/index.js'
 import { loggerService } from './logger.service.js'
 
@@ -6,7 +6,8 @@ let dbConn = null
 
 export const dbService = {
   getCollection,
-  connect: connectToDB
+  connect: connectToDB,
+  initializeDB     
 }
 
 async function connectToDB() {

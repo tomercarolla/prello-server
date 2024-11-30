@@ -20,6 +20,7 @@ const corsOptions = {
 
 try {
   dbService.connect()
+  dbService.initializeDB()
   console.log('trying to connect DB')
 } catch {
   console.error('Cannot Connect to DB')

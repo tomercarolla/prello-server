@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'
 import { utilService } from '../../services/util.service.js'
 
 export const boardService = {
+  createBoard,
   query,
   getById,
   remove,
@@ -15,6 +16,7 @@ export const boardService = {
   updateGroup,
   removeGroup,
 }
+
 
 function createBoard(board) {
   return {
@@ -133,26 +135,18 @@ async function save(boardToSave) {
   try {
     const collection = await dbService.getCollection('boards')
 
-    const boardToInsert = createBoard({
-      title: boardToSave.title,
-      style: {
-        backgroundImg: boardToSave.backgroundImg || '',
-      },
-      visibility: boardToSave.visibility,
-      createdBy: boardToSave.createdBy,
-      members: [boardToSave.createdBy]
-    })
-
     if (boardToSave._id) {
+      const { _id, ...boardData } = boardToSave
       const objId = ObjectId.createFromHexString(boardToSave._id)
+
       await collection.updateOne(
         { _id: objId },
-        { $set: boardToInsert }
+        { $set: boardData }
       )
-      return { ...boardToSave, _id: boardToSave._id }
+      return boardToSave
     } else {
-      boardToInsert.createdAt = Date.now()
-      const result = await collection.insertOne(boardToInsert)
+      boardToSave.createdAt = Date.now()
+      const result = await collection.insertOne(boardToSave)
       return { ...boardToSave, _id: result.insertedId }
     }
   } catch (err) {

@@ -182,6 +182,7 @@ async function addTask(boardId, groupId, task) {
         }
       }
     )
+
     return task
   } catch (err) {
     loggerService.error('Cannot add task', err)

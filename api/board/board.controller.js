@@ -101,7 +101,6 @@ export async function removeBoard(req, res) {
 }
 
 // TASKS
-
 export async function addTask(req, res) {
   try {
     const { boardId, groupId } = req.params

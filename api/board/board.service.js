@@ -67,9 +67,17 @@ async function query(filterBy = {}) {
       {
         $lookup: {
           from: 'users',
-          localField: 'members._id',
-          foreignField: '_id',
-          as: 'members',
+          let: { memberIds: '$members._id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ['$_id', '$$memberIds']
+                }
+              }
+            }
+          ],
+          as: 'members'
         }
       },
       {
@@ -77,7 +85,7 @@ async function query(filterBy = {}) {
           title: 1,
           isStarred: 1,
           style: 1,
-          members: '$members',
+          members: 1,
           groupCount: {
             $size: { $ifNull: ['$groups', []] }
           },

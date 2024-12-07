@@ -14,25 +14,11 @@ export async function requirePermission(req, res, next) {
             return res.status(400).send('Bad request - missing boardId')
         }
 
-        console.log('Trying to get board:', {
-            userId: req.user._id,
-            boardId,
-            userDetails: req.user
-        })
-
         const board = await boardService.getById(boardId);
 
         if (!board) {
             return res.status(404).send('Board not found')
         }
-
-        console.log('Board Details:', {
-            boardId,
-            members: board.members,
-            createdBy: board.createdBy,
-        })
-
-        console.log('User in requirePermission:', req.user)
 
         if (req.user.isAdmin === true) {
             loggerService.info('Admin has full permissions')
@@ -42,15 +28,11 @@ export async function requirePermission(req, res, next) {
 
         const isCreator = board.createdBy?._id?.toString() === req.user._id?.toString();
 
-        console.log('isCreator ', isCreator)
-
         if (isCreator) {
             loggerService.info('User is the creator of the board')
             req.board = board
             return next()
         }
-
-        console.log('board ', board)
 
         // if (board.visibility === 'public') {
         //   loggerService.info('Board is public')

@@ -37,10 +37,6 @@ app.get('/**', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'))
 })
 
-// app.get('/**', (req, res) => {
-//   res.sendFile(path.resolve('public/index.html'));
-// });
-
 const port = process.env.PORT || 3030;
 
 app.listen(port, () => {

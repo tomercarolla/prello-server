@@ -16,7 +16,6 @@ const corsOptions = {
   origin: process.env.NODE_ENV === 'production' ? '' :
     ['http://127.0.0.1:5173', 'http://localhost:5173'],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
 }
 
 try {

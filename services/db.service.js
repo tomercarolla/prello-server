@@ -6,7 +6,6 @@ let dbConn = null
 
 export const dbService = {
   getCollection,
-  connect: connectToDB,
 }
 
 async function connectToDB() {

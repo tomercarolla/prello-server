@@ -12,22 +12,14 @@ import path from "path";
 
 dotenv.config()
 
+
+
+const app = express();
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' ? '' :
-    ['http://127.0.0.1:5173', 'http://localhost:5173'],
+      ['http://127.0.0.1:5173', 'http://localhost:5173'],
   credentials: true,
-}
-
-try {
-  dbService.connect()
-  dbService.initializeDB()
-  console.log('trying to connect DB')
-} catch {
-  console.error('Cannot Connect to DB')
-}
-
-const app = express()
-const port = process.env.PORT || 3030
+};
 
 app.use(cors(corsOptions))
 app.use(express.json())
@@ -42,6 +34,8 @@ app.use('/api/user', userRoutes)
 app.get('/**', (req, res) => {
   res.sendFile(path.resolve('public/index.html'))
 })
+
+const port = process.env.PORT || 3030;
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)

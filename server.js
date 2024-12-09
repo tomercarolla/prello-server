@@ -8,6 +8,7 @@ import { workspaceRoute } from './api/workspace/workspace.routes.js'
 import { boardRouter } from './api/board/board.routes.js'
 import { userRoutes } from './api/users/user.routes.js'
 import { authRoutes } from './api/auth/auth.routes.js'
+import path from "path";
 
 dotenv.config()
 
@@ -39,10 +40,9 @@ app.use('/api/workspace', workspaceRoute)
 app.use('/api/board', boardRouter)
 app.use('/api/user', userRoutes)
 
-// app.get('/**', (req, res) => {
-//   res.sendFile(path.resolve('public/index.html'))
-// })
-
+app.get('/**', (req, res) => {
+  res.sendFile(path.resolve('public/index.html'))
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)

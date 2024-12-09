@@ -27,7 +27,7 @@ function createBoard(board) {
     style: {
       backgroundImage: board.style.backgroundImage || '',
     },
-    // visibility: board.visibility || 'private',
+    visibility: board.visibility || 'private',
     labels: board.labels || [
       {
         id: utilService.generateId('l'),
@@ -57,52 +57,29 @@ async function query(filterBy = {}) {
 
     const pipeline = [
       {
-        $match: {
-          ...(filterBy.userId && { 'members._id': filterBy.userId }),
-          ...(filterBy.isStarred && { isStarred: true }),
-          ...(filterBy.searchText && { title: { $regex: filterBy.searchText, $options: 'i' }}),
-          archivedAt: null,
-        }
+        $match: { archivedAt: null }
       },
       {
         $lookup: {
           from: 'users',
           localField: 'members._id',
           foreignField: '_id',
-          as: 'members',
+          as: 'members'
         }
       },
       {
         $project: {
           title: 1,
-          isStarred: 1,
           style: 1,
-          members: '$members',
-          groupCount: {
-            $size: { $ifNull: ['$groups', []] }
-          },
-          taskCount: {
-            $reduce: {
-              input: { $ifNull: ['$groups', []] },
-              initialValue: 0,
-              in: {
-                $add: [
-                  '$$value',
-                  {
-                    $size: { 
-                      $ifNull: ['$$this.tasks', []]
-                   } }
-                ]
-              }
-            }
-          }
+          labels: 1,
+          members: 1,  
+          groups: 1    
         }
       }
-    ];
+    ]
 
-    const boards = await collection.aggregate(pipeline).toArray();
-
-    return boards;
+    const boards = await collection.aggregate(pipeline).toArray()
+    return boards
   } catch (err) {
     loggerService.error('Cannot get boards', err)
     throw new Error('Cannot get boards')
@@ -190,9 +167,9 @@ async function addTask(boardId, groupId, task) {
   }
 }
 
-async function updateTask(boardId, groupId, taskToUpdate) {
+async function updateTask(boardId, groupId, taskToUpdate, activity) {
   try {
-    const collection = await dbService.getCollection('boards')  
+    const collection = await dbService.getCollection('boards')
     await collection.updateOne(
       {
         _id: ObjectId.createFromHexString(boardId),
@@ -200,7 +177,8 @@ async function updateTask(boardId, groupId, taskToUpdate) {
         'groups.tasks.id': taskToUpdate.id
       },
       {
-        $set: { 'groups.$[group].tasks.$[task]' : taskToUpdate },
+        $set: { 'groups.$[group].tasks.$[task]': taskToUpdate },
+        ...(activity && { $push: { activities: activity } })
       },
       {
         arrayFilters: [

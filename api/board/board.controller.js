@@ -119,7 +119,9 @@ export async function addTask(req, res) {
 export async function updateTask(req, res) {
   try {
     const { boardId, groupId } = req.params
-    const savedTask = await boardService.updateTask(boardId, groupId, req.body)
+    const { task, activity } = req.body
+
+    const savedTask = await boardService.updateTask(boardId, groupId, task, activity)
     res.json(savedTask)
   } catch (err) {
     loggerService.error(`Cannot update task`, err)
